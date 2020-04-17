@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import c from 'classnames';
-import { connect } from 'react-redux';
-// import * as auctions.js from '../../../ducks/extension';
 import './terms.scss';
 import WizardHeader from '../../../components/WizardHeader';
+import { shell } from 'electron';
+import Checkbox from '../../../components/Checkbox';
+
+const TERMS_URL = 'https://www.bobwallet.com/terms-of-service.html';
 
 export default class Terms extends Component {
   static propTypes = {
@@ -15,40 +16,50 @@ export default class Terms extends Component {
   };
 
   state = {
-    hasAccepted: false
+    hasAccepted: false,
   };
 
-  toggleTerms = () => this.setState({ hasAccepted: !this.state.hasAccepted });
+  toggleTerms = () => this.setState({hasAccepted: !this.state.hasAccepted});
 
   render() {
-    const { onAccept, currentStep, totalSteps, onBack } = this.props;
-    const { hasAccepted } = this.state;
+    const {onAccept, currentStep, totalSteps, onBack} = this.props;
+    const {hasAccepted} = this.state;
 
     return (
       <div className="terms">
-        <WizardHeader currentStep={currentStep} totalSteps={totalSteps} onBack={onBack}/>
+        <WizardHeader currentStep={currentStep} totalSteps={totalSteps} onBack={onBack} />
         <div className="terms__content">
-          <div className="terms__header_text">Terms of Use</div>
+          <div className="terms__header_text">Terms of Service</div>
           <div className="terms_subheader">
-            Please review and agree to the Handshake wallet's terms of use.
+            Please review and agree to Bob's{' '}
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                shell.openExternal(TERMS_URL);
+              }}
+            >
+              Terms of Service
+            </a>.
           </div>
-          <button
-            className={c('terms__button', {
-              'terms__button--accepted': hasAccepted
-            })}
-            onClick={this.toggleTerms}
-          >
-            <span>Terms of Use</span>
-            <span className="directional_symbol terms_forward_arrow">
-              <i className="right" />
+          <div className="terms__checkbox-container">
+            <Checkbox
+              className="terms__checkbox"
+              checked={hasAccepted}
+              onChange={this.toggleTerms}
+            />
+            <span className="terms__checkbox-description">
+              I accept the Terms of Service.
             </span>
-          </button>
+          </div>
+        </div>
+        <div className="terms__footer">
           <button
             className="extension_cta_button terms_cta"
             onClick={onAccept}
             disabled={!hasAccepted}
           >
-            I agree
+            Next
           </button>
         </div>
       </div>

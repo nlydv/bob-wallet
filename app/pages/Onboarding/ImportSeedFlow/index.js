@@ -37,7 +37,7 @@ class ImportSeedFlow extends Component {
   };
 
   state = {
-    currentStep: WARNING_STEP,
+    currentStep: TERMS_OF_USE,
     passphrase: '',
     mnemonic: '',
     isLoading: false,
@@ -48,8 +48,8 @@ class ImportSeedFlow extends Component {
       case TERMS_OF_USE:
         return (
           <Terms
-            currentStep={0}
-            totalSteps={4}
+            currentStep={1}
+            totalSteps={5}
             onAccept={() => this.setState({currentStep: WARNING_STEP})}
             onBack={() => this.props.history.push('/existing-options')}
           />
@@ -57,8 +57,8 @@ class ImportSeedFlow extends Component {
       case WARNING_STEP:
         return (
           <ImportSeedWarning
-            currentStep={1}
-            totalSteps={4}
+            currentStep={2}
+            totalSteps={5}
             onBack={() => this.props.history.push('/existing-options')}
             onNext={() => this.goTo(CREATE_PASSWORD)}
             onCancel={() => this.props.history.push('/funding-options')}
@@ -67,8 +67,8 @@ class ImportSeedFlow extends Component {
       case CREATE_PASSWORD:
         return (
           <CreatePassword
-            currentStep={2}
-            totalSteps={4}
+            currentStep={3}
+            totalSteps={5}
             onBack={() => this.setState({currentStep: WARNING_STEP})}
             onNext={passphrase => {
               this.setState({
@@ -82,8 +82,8 @@ class ImportSeedFlow extends Component {
       case ENTRY_STEP:
         return (
           <ImportSeedEnterMnemonic
-            currentStep={3}
-            totalSteps={4}
+            currentStep={4}
+            totalSteps={5}
             onBack={() => this.goTo(CREATE_PASSWORD)}
             onNext={(mnemonic) => {
               this.setState({
@@ -97,8 +97,8 @@ class ImportSeedFlow extends Component {
       case OPT_IN_ANALYTICS:
         return (
           <OptInAnalytics
-            currentStep={4}
-            totalSteps={4}
+            currentStep={5}
+            totalSteps={5}
             onBack={() => this.setState({currentStep: ENTRY_STEP})}
             onNext={async (optInState) => {
               await analytics.setOptIn(optInState);

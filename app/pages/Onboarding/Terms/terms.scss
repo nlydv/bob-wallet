@@ -21,6 +21,32 @@
     padding: 1.25rem 1.875rem 1.875rem 1.875rem;
     flex: 1 1 auto;
     // height: 0;
+
+    a {
+      color: #2480fd;
+      text-decoration: none;
+    }
+  }
+
+  &__checkbox-description {
+    color: $manatee-gray;
+    font-size: 0.875rem;
+    line-height: 1.125rem;
+    margin-bottom: 1rem;
+  }
+
+  &__checkbox-description {
+    line-height: 1.75rem;
+  }
+
+  &__checkbox-container {
+    @extend %row-nowrap;
+    margin-top: 1rem;
+  }
+
+  &__checkbox {
+    flex: 0 0 auto;
+    margin-right: 1rem;
   }
 
   &__button {
@@ -48,6 +74,10 @@
       color: $black;
     }
   }
+
+  &__footer {
+    padding: 1.25rem 1.875rem 1.875rem 1.875rem;
+  }
 }
 
 .terms_line_break {
@@ -57,8 +87,8 @@
 }
 
 .terms_subheader {
-  flex: 1 0 auto;
   @extend %h4;
+  margin: 0.2rem 0;
   color: $manatee-gray;
 }
 
