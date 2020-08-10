@@ -19,7 +19,7 @@
     @extend %col-nowrap;
     flex: 0 0 auto;
     width: 16rem;
-    padding: .5rem 0;
+    padding: .25rem 0;
     border-right: 1px solid rgba(0, 0, 0, 0.1);
 
     &__item {
@@ -28,8 +28,12 @@
       font-weight: 500;
 
       &--selected {
-        color: $azure-blue;
+        background-color: $athens-gray;
         font-weight: bold;
+      }
+
+      &--premium {
+        color: $azure-blue;
       }
 
       &:hover {

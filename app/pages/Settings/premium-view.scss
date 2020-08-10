@@ -1,0 +1,91 @@
+@import '../../variables';
+
+.premium-view {
+  @extend %row-nowrap;
+  cursor: default;
+
+  &__intro {
+    @extend %col-nowrap;
+    flex: 1 1 40%;
+    width: 0;
+    padding: 1rem;
+
+    &__title {
+      font-size: 1.25rem;
+      font-weight: bold;
+    }
+
+    &__description {
+      font-size: .875rem;
+      color: $manatee-gray;
+      margin: .5rem 0 1rem 0;
+    }
+
+    &__body {
+      @extend %col-nowrap;
+      font-size: 1rem;
+      line-height: 1.3125;
+    }
+
+    &__list-item {
+      @extend %row-nowrap;
+      margin: 0 0 .5rem 1rem;
+
+      &:before {
+        content: '✔';
+        display: block;
+        margin-right: 1rem;
+      }
+    }
+  }
+
+  &__confirm-form {
+    padding: 1rem;
+  }
+
+  &__form {
+    @extend %col-nowrap;
+    box-sizing: border-box;
+    flex: 1 1 60%;
+    width: 0;
+    border: 1px solid $grey;
+    margin: 1rem;
+    border-radius: 2px;
+    box-shadow: 0 2px 2px 1px rgba(0 , 0, 0, .05);
+    height: fit-content;
+
+    &__row {
+      @extend %row-nowrap;
+      padding: 1rem;
+      justify-content: space-between;
+      font-size: .875rem;
+
+      &__label {
+
+      }
+
+      &__value {
+        font-weight: bold;
+      }
+    }
+
+    &__title {
+      padding: 1rem;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      font-weight: 500;
+    }
+
+    &__footer {
+      @extend %col-nowrap;
+      align-items: center;
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
+      padding: 1rem;
+
+      &__btn {
+        @extend %btn-primary;
+        width: fit-content;
+        padding: 0.5rem 1rem;
+      }
+    }
+  }
+}

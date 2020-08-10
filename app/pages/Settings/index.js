@@ -20,6 +20,7 @@ import MiniModal from "../../components/Modal/MiniModal";
 import copy from "copy-to-clipboard";
 import {setCustomRPCStatus} from "../../ducks/node";
 import CustomRPCConfigModal from "./CustomRPCConfigModal";
+import PremiumView from "./PremiumView";
 
 const analytics = aClientStub(() => require('electron').ipcRenderer);
 
@@ -105,6 +106,14 @@ export default class Settings extends Component {
           onClick={() => history.push("/settings/connection")}
         >
           Network & Connection
+        </div>
+        <div
+          className={c("settings__nav__item", 'settings__nav__item--premium', {
+            'settings__nav__item--selected': location.pathname === '/settings/premium',
+          })}
+          onClick={() => history.push("/settings/premium")}
+        >
+          Upgrade to Premium
         </div>
         <div className="settings__footer">
           Bob v{pkg.version}
@@ -247,6 +256,7 @@ export default class Settings extends Component {
               )}
             </>
           </Route>
+          <Route path="/settings/premium" component={PremiumView} />
           <Route>
             <Redirect to="/settings/general" />
           </Route>
