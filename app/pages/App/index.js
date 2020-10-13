@@ -27,8 +27,7 @@ import './app.scss';
 import AccountLogin from '../AcountLogin';
 import PassphraseModal from '../AcountLogin/PassphraseModal';
 import * as node from '../../ducks/node';
-import { onNewBlock } from '../../ducks/backgroundMonitor';
-import SplashScreen from '../../components/SplashScreen';
+import SplashScreen from "../../components/SplashScreen";
 import NetworkPicker from '../NetworkPicker';
 import IdleModal from '../../components/IdleModal';
 
@@ -46,7 +45,6 @@ class App extends Component {
     isLocked: PropTypes.bool.isRequired,
     initialized: PropTypes.bool.isRequired,
     startNode: PropTypes.func.isRequired,
-    onNewBlock: PropTypes.func.isRequired,
     watchActivity: PropTypes.func.isRequired,
     isChangingNetworks: PropTypes.bool.isRequired,
   };
@@ -203,6 +201,52 @@ class App extends Component {
           <Component />
         </div>
       </div>
+      )
+  }
+
+  renderRoutes() {
+    return (
+      <Switch>
+        <Route
+          path="/account"
+          render={this.routeRenderer('Portfolio', Account, true, false)}
+        />
+        <Route path="/send" render={this.routeRenderer('Send', SendModal)} />
+        <Route
+          path="/receive"
+          render={this.routeRenderer('Receive', ReceiveModal)}
+        />
+        <Route
+          path="/get_coins"
+          render={this.routeRenderer('Get Coins', GetCoins)}
+        />
+        <Route
+          path="/settings"
+          render={this.routeRenderer('Settings', Settings, false, false)}
+        />
+        <Route path="/bids" render={this.routeRenderer('Domains', YourBids)} />
+        <Route
+          path="/domains"
+          render={this.routeRenderer('Domains', SearchTLD, false)}
+        />
+        <Route
+          path="/watching"
+          render={this.routeRenderer('Watching', Watching)}
+        />
+        <Route
+          path="/domain_manager/:name"
+          render={this.routeRenderer('Domain Manager', MyDomain)}
+        />
+        <Route
+          path="/domain_manager"
+          render={this.routeRenderer('Domain Manager', DomainManager)}
+        />
+        <Route
+          path="/domain/:name?"
+          render={this.routeRenderer('Browse Domains', Auction, false)}
+        />
+        {this.renderDefault()}
+      </Switch>
     );
   }
 
@@ -256,7 +300,6 @@ export default withRouter(
     dispatch => ({
       watchActivity: () => dispatch(walletActions.watchActivity()),
       startNode: () => dispatch(node.startApp()),
-      onNewBlock: () => dispatch(onNewBlock()),
-    }),
-  )(App),
+    })
+  )(App)
 );
