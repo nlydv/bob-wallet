@@ -167,6 +167,8 @@ class WalletService {
     });
 
     setTimeout(this.checkRescanStatus, 5000);
+
+    wdb.client.timeout = 10000;
     await wdb.rescan(height);
   };
 
@@ -532,6 +534,7 @@ class WalletService {
       network: network,
       port: network.walletPort,
       apiKey: this.walletApiKey,
+      timeout: 10000,
     };
 
     const node = new WalletNode({
@@ -567,7 +570,7 @@ class WalletService {
 
     this.node = node;
     this.client = new WalletClient(walletOptions);
-
+    this.client.timeout = 10000;
     await this.onNewBlock();
     await this.checkRescanStatus();
   };
