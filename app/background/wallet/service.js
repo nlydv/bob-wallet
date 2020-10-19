@@ -9,7 +9,7 @@ import rimraf from 'rimraf';
 import { ConnectionTypes, getConnection } from '../connections/service';
 import crypto from 'crypto';
 import { dispatchToMainWindow } from '../../mainWindow';
-import { START_SYNC_WALLET, STOP_SYNC_WALLET, SYNC_WALLET_PROGRESS } from '../../ducks/walletReducer';
+import {SET_WALLETS, START_SYNC_WALLET, STOP_SYNC_WALLET, SYNC_WALLET_PROGRESS} from '../../ducks/walletReducer';
 import {SET_FEE_INFO, SET_NODE_INFO} from "../../ducks/nodeReducer";
 
 const WalletNode = require('hsd/lib/wallet/node');
@@ -185,6 +185,12 @@ class WalletService {
     };
 
     const res = await this.client.createWallet(this.name, options);
+    const wids = await this.listWallets();
+
+    dispatchToMainWindow({
+      type: SET_WALLETS,
+      payload: wids,
+    });
 
     setTimeout(async () => {
       this.rescan(0);
@@ -520,7 +526,27 @@ class WalletService {
     throw new Error('Transaction never appeared in the mempool.');
   };
 
-  listWallets = () => this.client.getWallets();
+  /**
+   * List Wallet IDs (exclude unencrypted wallets)
+   * @return {Promise<[string]>}
+   */
+  listWallets = async () => {
+    await this._ensureClient();
+
+    const wdb = this.node.wdb;
+    const wallets = await wdb.getWallets();
+    const ret = [];
+
+    for (const wid of wallets) {
+      const info = await wdb.get(wid);
+      const {master: {encrypted}} = info;
+      if (encrypted) {
+        ret.push(wid);
+      }
+    }
+
+    return ret;
+  };
 
   _onNodeStart = async (networkName, network, apiKey) => {
     const conn = await getConnection();
