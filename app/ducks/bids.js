@@ -13,8 +13,16 @@ export const setYourBids = (bids = []) => ({
 
 export const getYourBids = () => async (dispatch) => {
   const result = await walletClient.getBids();
+  const ns = {};
 
-  const yourBids = result.filter(({ own }) => own);
+  const yourBids = result.filter(async bid => {
+    if (bid.own && !ns[bid.name]) {
+      ns[bid.name] = await walletClient.getAuctionInfo(bid.name);
+    }
+    return bid.own;
+  });
+
+  console.log({ ns })
 
   if (result && result.length) {
     dispatch(setYourBids(yourBids));

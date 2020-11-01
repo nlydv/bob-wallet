@@ -27,6 +27,7 @@ const {hashName, types} = require('hsd/lib/covenants/rules');
 const MasterKey = require('hsd/lib/wallet/masterkey');
 const Mnemonic = require('hsd/lib/hd/mnemonic');
 const Covenant = require('hsd/lib/primitives/covenant');
+const rules = require('hsd/lib/covenants/rules');
 
 const randomAddrs = {
   [NETWORKS.TESTNET]: 'ts1qfcljt5ylsa9rcyvppvl8k8gjnpeh079drfrmzq',
@@ -219,7 +220,32 @@ class WalletService {
   };
 
   getAuctionInfo = async (name) => {
-    return this._executeRPC('getauctioninfo', [name]);
+    await this._ensureClient();
+    const height = this.lastKnownChainHeight;
+    const network = this.network;
+
+    if (!name || !rules.verifyName(name))
+      throw new Error('Invalid name.');
+
+    const ns = await wallet.getNameStateByName(name);
+
+    if (!ns)
+      throw new Error('Auction not found.');
+
+    const bids = await wallet.getBidsByName(name);
+    const reveals = await wallet.getRevealsByName(name);
+
+    const info = ns.getJSON(height, network);
+    info.bids = [];
+    info.reveals = [];
+
+    for (const bid of bids)
+      info.bids.push(bid.toJSON());
+
+    for (const reveal of reveals)
+      info.reveals.push(reveal.toJSON());
+
+    return info;
   };
 
   getTransactionHistory = async () => {
