@@ -1,9 +1,9 @@
-<p align="center"><img src="./resources/icons/128x128.png"></p>
+![](./resources/bob_wallet_logo.png)
 
-# Bob Wallet: A Handshake Wallet and Full Node
+Bob Wallet is a desktop application that runs a [Handshake](https://handshake.org) full node.
+It allows you to use HNS and manage your Handshake names.
 
-Bob Wallet is a [Handshake](https://handshake.org) wallet with an integrated full node.
-This is beta software.
+Note: Bob Wallet is beta software.
 (As with all wallet GUIs, please use with care, and at your own risk.)
 
 ## How to Install Bob Wallet
