@@ -170,7 +170,7 @@ class App extends Component {
             isLocked={this.props.isLocked}
             wallets={this.props.wallets}
             path="/bids"
-            render={this.routeRenderer('Domains', YourBids)}
+            render={this.routeRenderer('Bid History', YourBids)}
           />
           <ProtectedRoute
             isLocked={this.props.isLocked}

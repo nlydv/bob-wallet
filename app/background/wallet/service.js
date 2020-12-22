@@ -18,6 +18,8 @@ import {
   SYNC_WALLET_PROGRESS
 } from '../../ducks/walletReducer';
 import {SET_FEE_INFO, SET_NODE_INFO} from "../../ducks/nodeReducer";
+import walletClient from "../../utils/walletClient";
+import {NAME_STATES} from "../../ducks/names";
 const WalletNode = require('hsd/lib/wallet/node');
 const TX = require('hsd/lib/primitives/tx');
 const {Output, MTX, Address, Coin} = require('hsd/lib/primitives');
@@ -264,7 +266,21 @@ class WalletService {
   getBids = async () => {
     await this._ensureClient();
     const wallet = await this.node.wdb.get(this.name);
-    return wallet.getBids();
+    const bids = await wallet.getBids();
+    const results = [];
+
+    for (const bid of bids) {
+      const ns = await nodeService.getNameInfo(bid.name.toString('utf-8'));
+      const {start, info} = ns || {};
+
+      let isOwner = false;
+      if (info && info.state === NAME_STATES.CLOSED) {
+        isOwner = !!await this.getCoin(info.owner.hash, info.owner.index);
+      }
+      results.push({ bid, start, info, isOwner });
+    }
+
+    return results;
   };
 
   getMasterHDKey = () => this._ledgerDisabled(

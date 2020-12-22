@@ -1,4 +1,5 @@
 import walletClient from '../utils/walletClient';
+import {SET_NAME} from "./namesReducer";
 
 const SET_YOUR_BIDS = 'app/bids/setYourBids';
 
@@ -13,8 +14,20 @@ export const setYourBids = (bids = []) => ({
 
 export const getYourBids = () => async (dispatch) => {
   const result = await walletClient.getBids();
+  const bids = result.map(({ bid, start, info, isOwner }) => {
+    dispatch({
+      type: SET_NAME,
+      payload: {
+        name: bid.name,
+        start,
+        info,
+        isOwner,
+      },
+    });
+    return bid;
+  });
 
-  const yourBids = result.filter(({ own }) => own);
+  const yourBids = bids.filter(({ own }) => own);
 
   if (result && result.length) {
     dispatch(setYourBids(yourBids));

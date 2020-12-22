@@ -1,4 +1,6 @@
 import punycode from 'punycode';
+import {hoursToNow} from "./timeConverter";
+import moment from "moment";
 
 export const states = {
   OPENING: 'OPENING',
@@ -56,6 +58,31 @@ export const isBidding = name => checkState(name, states.BIDDING);
 export const isReveal = name => checkState(name, states.REVEAL);
 export const isRevoked = name => checkState(name, states.REVOKED);
 export const isClosed = name => checkState(name, states.CLOSED);
+
+export const checkRemainingTime = (name, currentHeight) => {
+  const domain = name || {};
+  const info = domain.info || {};
+  const start = domain.start || {};
+  const stats = info.stats || {};
+
+  if (isBidding(domain)) {
+    return stats.hoursUntilReveal;
+  }
+
+  if (isOpening(domain)) {
+    return stats.hoursUntilBidding;
+  }
+
+  if (isReveal(domain)) {
+    return stats.hoursUntilClose;
+  }
+
+  const delta = currentHeight - start.start;
+  const AVERAGE_BLOCK_TIME = 10 * 60 * 1000;
+  const PER_HOUR = 60 * 60 * 1000;
+  const timeUntil = delta * AVERAGE_BLOCK_TIME;
+  return timeUntil / PER_HOUR;
+};
 
 function checkState(name, expectedState) {
   if (!name) {

@@ -8,8 +8,6 @@ import Tooltipable from '../../components/Tooltipable';
 import { clientStub as aClientStub } from '../../background/analytics/client';
 import * as walletActions from "../../ducks/walletActions";
 
-const pkg = require('../../../package.json');
-
 const analytics = aClientStub(() => require('electron').ipcRenderer);
 
 @connect(
@@ -44,14 +42,6 @@ export default class Account extends Component {
       <div className="account">
         {this.maybeRenderTXAlert()}
         <div className="account__header">
-          <div className="account__header-section">
-            <div className="account__address">
-              <div>Total Balance</div>
-            </div>
-            <div className="account__balance-wrapper">
-              <div className="account__balance-wrapper__amount">{`${displayBalance(unconfirmedBalance)} HNS`}</div>
-            </div>
-          </div>
           <div className="account__header-section">
             <div className="account__address">
               <div>Spendable Balance</div>

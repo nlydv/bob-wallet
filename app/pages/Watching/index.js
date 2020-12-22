@@ -396,6 +396,7 @@ class Watching extends Component {
     if (!this.fuse) {
       this.fuse = new Fuse(names.map(name => ({name})), {
         keys: ['name'],
+        shouldSort: false,
       });
     }
     const results = query

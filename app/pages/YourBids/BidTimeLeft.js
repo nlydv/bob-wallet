@@ -4,6 +4,7 @@ import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
 import { isReveal, isBidding, isOpening } from '../../utils/nameHelpers';
 import { hoursToNow } from '../../utils/timeConverter';
+import Blocktime from "../../components/Blocktime";
 
 class BidTimeLeft extends Component {
   static propTypes = {
@@ -39,7 +40,7 @@ class BidTimeLeft extends Component {
       return hoursToNow(stats.hoursUntilClose);
     }
 
-    return 'N/A';
+    return <Blocktime height={domain.start.start} fromNow />;
   }
 }
 

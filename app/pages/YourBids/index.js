@@ -20,6 +20,18 @@ import * as nameActions from "../../ducks/names";
 import * as notifActions from "../../ducks/notifications";
 
 const analytics = aClientStub(() => require('electron').ipcRenderer);
+const FILTER_TYPES = {
+  ALL: 'ALL',
+  BIDDING: 'BIDDING',
+  REVEALING: 'REVEALING',
+  CLOSED: 'CLOSED',
+};
+
+const ACTION_FILTERS = {
+  REGISTER: 'REGISTER',
+  REDEEM: 'REDEEM',
+  REVEAL: 'REVEAL',
+};
 
 const ITEM_PER_DROPDOWN = [
   { label: '5', value: 5 },
@@ -31,6 +43,7 @@ const ITEM_PER_DROPDOWN = [
 class YourBids extends Component {
   static propTypes = {
     yourBids: PropTypes.array.isRequired,
+    stats: PropTypes.object.isRequired,
     getYourBids: PropTypes.func.isRequired,
     sendRedeemAll: PropTypes.func.isRequired,
     sendRevealAll: PropTypes.func.isRequired,
@@ -43,6 +56,7 @@ class YourBids extends Component {
     currentPageIndex: 0,
     itemsPerPage: 10,
     query: '',
+    currentFilter: FILTER_TYPES.ALL,
   };
 
   componentDidMount() {
@@ -51,6 +65,25 @@ class YourBids extends Component {
   }
 
   handleOnChange = e => this.setState({ query: e.target.value });
+
+  getFilteredBids() {
+    const { currentFilter } = this.state;
+    let res = this.props.yourBids;
+
+    switch (currentFilter) {
+      case FILTER_TYPES.BIDDING:
+        res = res.filter(bid => bid.state === 'BIDDING');
+        break;
+      case FILTER_TYPES.REVEALING:
+        res = res.filter(bid => bid.state === 'REVEAL');
+        break;
+      case FILTER_TYPES.CLOSED:
+        res = res.filter(bid => bid.state === 'CLOSED');
+        break;
+    }
+
+    return res;
+  }
 
   onRedeemAll = async () => {
     const {
@@ -106,12 +139,62 @@ class YourBids extends Component {
             </button>
           </div>
         </div>
+        <div className="bids__filters">
+          <div className="bids__filters__label">Filter by:</div>
+          {this.renderStatusFilter()}
+        </div>
         <Table className="bids-table">
           <Header />
           {this.renderRows()}
           {this.renderControls()}
         </Table>
       </div>
+    );
+  }
+
+  renderActionFilters() {
+    const { currentFilter } = this.state;
+    const {stats, yourBids} = this.props;
+
+    return (
+      <Dropdown
+        items={[
+          {label: `Status: All (${yourBids.length})`, value: FILTER_TYPES.ALL},
+          {label: `Status: Bidding (${stats.BIDDING || 0})`, value: FILTER_TYPES.BIDDING},
+          {label: `Status: Revealing (${stats.REVEAL || 0})`, value: FILTER_TYPES.REVEALING},
+          {label: `Status: Closed (${stats.CLOSED || 0})`, value: FILTER_TYPES.CLOSED},
+        ]}
+        onChange={filterType => this.setState({ currentFilter: filterType })}
+        currentIndex={[
+          FILTER_TYPES.ALL,
+          FILTER_TYPES.BIDDING,
+          FILTER_TYPES.REVEALING,
+          FILTER_TYPES.CLOSED,
+        ].indexOf(currentFilter)}
+      />
+    );
+  }
+
+  renderStatusFilter() {
+    const { currentFilter } = this.state;
+    const {stats, yourBids} = this.props;
+
+    return (
+      <Dropdown
+        items={[
+          {label: `Status: All (${yourBids.length})`, value: FILTER_TYPES.ALL},
+          {label: `Status: Bidding (${stats.BIDDING || 0})`, value: FILTER_TYPES.BIDDING},
+          {label: `Status: Revealing (${stats.REVEAL || 0})`, value: FILTER_TYPES.REVEALING},
+          {label: `Status: Closed (${stats.CLOSED || 0})`, value: FILTER_TYPES.CLOSED},
+        ]}
+        onChange={filterType => this.setState({ currentFilter: filterType })}
+        currentIndex={[
+          FILTER_TYPES.ALL,
+          FILTER_TYPES.BIDDING,
+          FILTER_TYPES.REVEALING,
+          FILTER_TYPES.CLOSED,
+        ].indexOf(currentFilter)}
+      />
     );
   }
 
@@ -200,8 +283,9 @@ class YourBids extends Component {
   }
 
   renderRows() {
-    const { yourBids, history } = this.props;
+    const { history } = this.props;
     const { query, currentPageIndex: s, itemsPerPage: n } = this.state;
+    const yourBids = this.getFilteredBids();
 
     if (!yourBids.length) {
       return <EmptyResult />;
@@ -237,9 +321,31 @@ class YourBids extends Component {
 
 export default withRouter(
   connect(
-    state => ({
-      yourBids: state.bids.yourBids,
-    }),
+    state => {
+      const names = state.names;
+      const yourBids = [];
+      const stats = {};
+      let revealable = 0;
+      let redeemable = 0;
+      let registerable = 0;
+
+      state.bids.yourBids.forEach(bid => {
+        const name = names[bid.name] || {};
+        const state = name.info && name.info.state;
+        yourBids.push({ ...bid, state });
+        stats[state] = stats[state] ? stats[state] + 1 : 1;
+      });
+
+      return {
+        yourBids,
+        stats,
+        actionStats: {
+          revealable,
+          redeemable,
+          registerable,
+        },
+      };
+    },
     dispatch => ({
       getYourBids: () => dispatch(bidsActions.getYourBids()),
       sendRedeemAll: () => dispatch(nameActions.sendRedeemAll()),

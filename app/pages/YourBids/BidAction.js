@@ -12,6 +12,7 @@ class BidAction extends Component {
     name: PropTypes.string.isRequired,
     domain: PropTypes.object,
     getNameInfo: PropTypes.func.isRequired,
+    sendReveal: PropTypes.func.isRequired,
     sendRedeem: PropTypes.func.isRequired,
     sendRegister: PropTypes.func.isRequired,
     showSuccess: PropTypes.func.isRequired,
@@ -24,9 +25,7 @@ class BidAction extends Component {
       getNameInfo,
     } = this.props;
 
-    getNameInfo(name);
-
-
+    setTimeout(() => getNameInfo(name), 0);
   }
 
   isReveal = () => isReveal(this.props.domain);
@@ -73,6 +72,14 @@ class BidAction extends Component {
       return (
         <div className="bid-action">
           { this.renderRedeem() }
+        </div>
+      );
+    }
+
+    if (this.isReveal()) {
+      return (
+        <div className="bid-action">
+          { this.renderReveal() }
         </div>
       );
     }
@@ -142,6 +149,42 @@ class BidAction extends Component {
       }
     }
   }
+
+  renderReveal() {
+    const domain = this.props.domain || {};
+    const bids = domain.bids || [];
+    const reveals = domain.reveals || [];
+
+    if (domain.pendingOperation === 'REVEAL') {
+      return null;
+    }
+
+    for (const reveal of reveals) {
+      if (reveal.bid.own) {
+        return null;
+      }
+    }
+
+    for (const {bid, height} of bids) {
+      if (bid.own) {
+        if (height >= domain.info.height) {
+          return (
+            <div
+              className="bid-action__link"
+              onClick={e => {
+                e.stopPropagation();
+                this.props.sendReveal()
+                  .then(() => this.props.showSuccess('Your reveal request is submitted! Please wait about 15 minutes for it to complete.'))
+                  .catch(e => this.props.showError(e.message));
+              }}
+            >
+              Reveal
+            </div>
+          );
+        }
+      }
+    }
+  }
 }
 
 export default withRouter(
@@ -157,6 +200,7 @@ export default withRouter(
     (dispatch, ownProps) => ({
       sendRedeem: () => dispatch(nameActions.sendRedeem(ownProps.name)),
       sendRegister: () => dispatch(nameActions.sendRegister(ownProps.name)),
+      sendReveal: () => dispatch(nameActions.sendReveal(ownProps.name)),
       showError: (message) => dispatch(showError(message)),
       showSuccess: (message) => dispatch(showSuccess(message)),
       getNameInfo: (name) => dispatch(nameActions.getNameInfo(name)),
