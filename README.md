@@ -25,10 +25,10 @@ Note: this screenshot is unlikely to age well but the filetypes are highlighted 
 brew install kyokan-bob
 ```
 
-Uninstalling the cask doesn't delete any locally stored wallet or chain data by default, however if you need to do clean install, the --zap flag will get rid of everything:
+Uninstalling the cask doesn't delete any locally stored wallet or chain data by default, however if you need to do a clean install, the --zap flag will get rid of everything. Fresh reinstalls like this are recommend for some version upgrades where changes to the underlying Handshake node are made:
 
 ```bash
-brew uninstall --zap kyokan-bob
+brew uninstall --zap kyokan-bob && brew install kyokan-bob
 ```
 
 Note: the zap uninstall method will delete any block data that the built-in HSD node has saved and you will have to resync the entire chain again if reinstalled. 
