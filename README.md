@@ -31,7 +31,7 @@ Uninstalling the cask doesn't delete any locally stored wallet or chain data by 
 brew uninstall --zap kyokan-bob && brew install kyokan-bob
 ```
 
-Note: the zap uninstall method will delete any block data that the built-in HSD node has saved and you will have to resync the entire chain again if reinstalled. 
+**Note**: the zap uninstall method will delete any block data that the built-in HSD node has saved and you will have to resync the entire chain again if reinstalled. 
 
 ### Linux
 
